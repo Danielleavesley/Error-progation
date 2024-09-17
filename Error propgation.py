@@ -1,10 +1,4 @@
 
-from ast import Assign, Break
-from asyncio.proactor_events import constants
-from cmath import exp
-from doctest import master
-from email.quoprimime import header_check
-from itertools import count
 from random import choices
 import tkinter
 from tkinter import ANCHOR, SINGLE, Button, Widget, filedialog,ttk
@@ -28,13 +22,11 @@ def Equation_handle(): # handels taking an equation as text imput and finding th
     Symbols=[]
     temp=""
     for x in chars:
-        print(x)
         if 65<=ord(x)<=90 or 97<=ord(x)<=122:
             temp=temp+x
         elif len(temp)>0:
             Symbols.append(temp)
             temp=""
-    print(Symbols)
 
     return equation,Symbols
 
@@ -45,37 +37,41 @@ def file_handling(path): #deals with opening and formating the file and data
     org_data=[]
     temp=[]
     for coloum_index in range(0,len(headers)): #buntch of logic to try and sort data
-        print((headers[coloum_index].split("/")[0]))
-        if(headers[coloum_index].split("/")[0]) == "Error" or (headers[coloum_index].split("/")[0]) == "error":
+        if "Error" in (headers[coloum_index].split("/")[0]) or "error" in (headers[coloum_index].split("/")[0]):
             if ((coloum_index+1)==len(headers)):
-                temp.append(headers[coloum_index-1])
+                #temp.append(headers[coloum_index-1])
                 for row_index in range(0,len(data_array)):
-                    temp.append([data_array[row_index][coloum_index-1],data_array[row_index][coloum_index]])
+                    if data_array[row_index][coloum_index]=="":
+                        temp.append([data_array[row_index][coloum_index-1],0])
+                    else:
+                        temp.append([data_array[row_index][coloum_index-1],data_array[row_index][coloum_index]])
                 org_data.append(temp)
                 temp=[]
             elif len(temp)==0:
                 print("ohh nnonnnnn")
             else:
                 for row_index in range(0,len(data_array)):
-                    temp.append([data_array[row_index][coloum_index-1],data_array[row_index][coloum_index]])
+                    if data_array[row_index][coloum_index]=="":
+                        temp.append([data_array[row_index][coloum_index-1],0])
+                    else:
+                        temp.append([data_array[row_index][coloum_index-1],data_array[row_index][coloum_index]])
                 org_data.append(temp)
                 temp=[]
         else:
             if ((coloum_index+1)==len(headers)):
-                temp.append(headers[coloum_index])
+                #temp.append(headers[coloum_index])
                 for row_index in range(0,len(data_array)):
-                    temp.append([data_array[row_index][coloum_index],0])
+                    temp.append([data_array[row_index][coloum_index-1],0])
                 org_data.append(temp)
                 temp=[]
             elif len(temp)==0:
                 temp.append(headers[coloum_index])
             else: #temp has a header already in
                 for row_index in range(0,len(data_array)):
-                    temp.append([data_array[row_index][coloum_index-1],0])
+                    temp.append([data_array[row_index][coloum_index-1],1000])
                 org_data.append(temp)
                 temp=[]
                 temp.append(headers[coloum_index])
-    print(org_data)
     return(org_data,headers)
 #    org_data should end up beening orginsted as so
 #    [[colume header1,[data point1, error],[data point2, error]]......[data pointn,error]    ,       [colume header2],[data point1, error],[data point2, error]......[data pointn,error]]
@@ -113,7 +109,6 @@ def Constant_diolago(x):
      
 def Selection(org_data,headers,Cont_dir,Symbols):
     button_cont()
-    print("out")
     print(const_complete)
 
 
@@ -135,12 +130,7 @@ def button_cont():
         Symbols.remove(pick)
     except:
         print("fine")
-    
-    print(f"{len(Cont_dir)}    {len(const_complete)}")
-
-    print(f"ghghghhghg {x} {len(Cont_dir) }  {const_complete}  ")
     while x<len(Cont_dir):
-        print(x)
         root = tkinter.Tk()
         root.title("Symblos to what they reersents")
         #window size
@@ -155,16 +145,12 @@ def button_cont():
             box.pack()
         berry=box
         x=x+1
-        print(f"{len(Cont_dir)}  sdsdsds  {len(const_complete)}")
         if len(Cont_dir) == (len(const_complete)):
-            print("hi 2")
             ttk.Button(master=root,text="comfirm",command= root.destory ).pack()
         else:
-            print("hi 3")
             ttk.Button(master=root,text="comfirm",command= button_cont ).pack()
         root.mainloop()
     if len(Cont_dir) == (len(const_complete)):
-        print("hi")
         if len(Cont_dir)!=0:
             inserting_constants(const_complete)
         elif len(Cont_dir)==0:
@@ -203,7 +189,6 @@ def inserting_constants(const_complete):
     for n in new_Equation:
         temp=temp+n
     new_Equation=temp
-    print(new_Equation)
     global x
     x=0
 
@@ -227,7 +212,6 @@ def button_Headers():
         Symbols.remove(pick)
     except:
         print("fine")
-    print(Symbols,x,no_error_headers)
     while x<len(Symbols):
         windows = tkinter.Tk()
         windows.title("Symblos to what they reersents")
@@ -239,21 +223,16 @@ def button_Headers():
         label=ttk.Label(master=windows, text=f"This symbol {f"{Symbols[x]}"} \nwhat symbol repersents it").pack()
         box2=tkinter.Listbox(master=windows,selectmode=SINGLE , height=len(no_error_headers),width=50)
         for y in range(0,len(no_error_headers)): 
-            print(no_error_headers[y])
             box2.insert(tkinter.END, no_error_headers[y])
         box2.pack()
         berry=box2
         x=x+1
         if len(Symbols) == (len(headers_complete)):
-            print("hi 2")
             ttk.Button(master=windows,text="comfirm",command= windows.destory ).pack()
         else:
-            print("hi 3")
             ttk.Button(master=windows,text="comfirm",command= button_Headers ).pack()
         windows.mainloop()
-    print("hi")
-    windows.destroy()
-    print(headers_complete)     #headers_complete is formated [[header,symbol],[header2,symblol2]]
+    windows.destroy()     #headers_complete is formated [[header,symbol],[header2,symblol2]]
     error_prop()
     return
 
@@ -262,10 +241,8 @@ def error_prop():
     global new_Equation,org_data,headers_complete,Equation #org data is all data where used_data is required data
     partial_diff=[]
     used_data=[]   # used_data formated [[[headers,symbol],[data for header1],[error for header1]],[[data for header2],[error for header2]]....]
-    print(org_data)
     for x in headers_complete:
         partial_diff.append([diff(new_Equation+(f"*sigma_{x[1]}"),x[1]),x[1]]) #partial_diff is formated like so [[partial diffrental,the sybol it was diffrent against] , []]
-    print(partial_diff[0])
     for header in headers_complete:
         temp_data=[]
         temp_error=[]
@@ -286,42 +263,26 @@ def error_prop():
         globals()[variable_name] = data[1]
         variable_name = f"sigma_{data[0][1]}"
         globals()[variable_name] = data[2]
-    print(new_Equation,sigma_l,sigma_w,sigma_h)
     new_vaules=eval(new_Equation)
     temp_error=np.linspace(0,0,num=len(used_data[0][1]))
     for partial in partial_diff:
-        print(eval(str(partial[0])))
         temp_error=temp_error+(eval(str(partial[0])))**2
     new_error=np.sqrt(temp_error)
-    print([new_vaules,new_error])
+    new_file={}
+    for data in org_data:
+        new_file.update({(f"{data[0]}"):[],(f"{data[0]} error"):[]})
+        new_file_data=[]
+        new_file_error=[]
+        for x in range(1,len(data)):
+            new_file_data.append(data[x][0])
+            new_file_error.append(data[x][1])
+        new_file[f"{data[0]}"]=new_file_data
+        new_file[f"{data[0]} error"]=new_file_error
 
-        
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    new_file.update({"new vaules":new_vaules})
+    new_file.update({"new vaules error":new_error})
+    df = pd.DataFrame(new_file)
+    df.to_csv("my_data.csv", index=False)
 
 
 

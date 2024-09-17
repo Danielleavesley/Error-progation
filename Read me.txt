@@ -1,0 +1,18 @@
+File formate:
+
+make sure your column header is in the first row and that the data is in the same colume.
+
+make sure the error that relates to your data is in the colume to the right of the data it represents
+and that the header of that colum contains the word error or Error.
+
+It will creat a new cvs file in the place where this file is saved.
+the headers name might be different and might add new errors to your exiting data. That will only 
+happen if no error is present and it will be assumed to be zero
+
+
+
+Code:
+It is horrible code, it is my first time messing around with gui and tkinker and I haven't 
+fully grasp the correct way and limitations to it. This means my code does have janky work arounds and a lot of my code is reapeted or re-ran it does work tho. and it doesn't end the run time unless manly closed.
+
+you do need to tkinker, numpy, panda and scipy to work .
