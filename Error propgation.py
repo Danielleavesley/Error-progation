@@ -156,6 +156,7 @@ def button_cont():
         elif len(Cont_dir)==0:
             global new_Equation
             new_Equation=Equation
+        berry=0
         button_Headers()
 
     return
@@ -227,10 +228,7 @@ def button_Headers():
         box2.pack()
         berry=box2
         x=x+1
-        if len(Symbols) == (len(headers_complete)):
-            ttk.Button(master=windows,text="comfirm",command= windows.destory ).pack()
-        else:
-            ttk.Button(master=windows,text="comfirm",command= button_Headers ).pack()
+        ttk.Button(master=windows,text="comfirm",command= button_Headers ).pack()
         windows.mainloop()
     windows.destroy()     #headers_complete is formated [[header,symbol],[header2,symblol2]]
     error_prop()
@@ -243,10 +241,13 @@ def error_prop():
     used_data=[]   # used_data formated [[[headers,symbol],[data for header1],[error for header1]],[[data for header2],[error for header2]]....]
     for x in headers_complete:
         partial_diff.append([diff(new_Equation+(f"*sigma_{x[1]}"),x[1]),x[1]]) #partial_diff is formated like so [[partial diffrental,the sybol it was diffrent against] , []]
+    
     for header in headers_complete:
         temp_data=[]
         temp_error=[]
         for data in org_data:
+            print(f"this is the header{header}")
+            print(f"this is the data{data}")
             if data[0]==header[0]:
                 for data_index in range(1,len(data)):
                     if data[data_index][0]=="":
@@ -264,8 +265,10 @@ def error_prop():
         variable_name = f"sigma_{data[0][1]}"
         globals()[variable_name] = data[2]
     new_vaules=eval(new_Equation)
+    print(used_data)
     temp_error=np.linspace(0,0,num=len(used_data[0][1]))
     for partial in partial_diff:
+        print(temp_error,(eval(str(partial[0])))**2)
         temp_error=temp_error+(eval(str(partial[0])))**2
     new_error=np.sqrt(temp_error)
     new_file={}
@@ -282,7 +285,18 @@ def error_prop():
     new_file.update({"new vaules":new_vaules})
     new_file.update({"new vaules error":new_error})
     df = pd.DataFrame(new_file)
-    df.to_csv("my_data.csv", index=False)
+    global path
+    print(path)
+    path_split=(path.name).split(r"/")
+    print(path_split)
+    file_name=((path_split[len(path_split)-1]).split(".")[0])
+    path_split.pop(len(path_split)-1)
+    print(path_split)
+    new_path=""
+    for i in path_split:
+        new_path=new_path+(f"{i}/")
+    print(new_path)
+    df.to_csv(new_path+file_name+"_Propgated.csv", index=False)
 
 
 
@@ -307,6 +321,8 @@ def main():
     global Equation  
     Equation,Symbols=Equation_handle()
     Cont_dir=Constant_handling()
+    global path
+    path=Inital_results
     org_data,headers=file_handling(Inital_results)
     for x in org_data:
         no_error_headers.append(x[0])
