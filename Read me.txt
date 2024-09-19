@@ -9,6 +9,9 @@ It will creat a new cvs file in the place where this file is saved.
 the headers name might be different and might add new errors to your exiting data. That will only 
 happen if no error is present and it will be assumed to be zero
 
+my_data.csv is an example of what the file after beening caculated looks like. There should be 
+antional two colums to your data
+
 
 
 Code:
