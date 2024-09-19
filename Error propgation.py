@@ -1,18 +1,14 @@
-
-from random import choices
 import tkinter
 from tkinter import ANCHOR, SINGLE, Button, Widget, filedialog,ttk
 from tkinter import *
-from turtle import width
 import numpy as np
 import pandas as pd
 from sympy import symbols, diff
 tkinter.Tk().withdraw() 
-from gooey import GooeyParser
-
 def File_slc(): #handles dioglog for browsing a file
     folder_path = filedialog.askopenfile(mode="r")
     return folder_path
+
 
 
 def Equation_handle(): # handels taking an equation as text imput and finding the symblos within it
@@ -29,6 +25,8 @@ def Equation_handle(): # handels taking an equation as text imput and finding th
             temp=""
 
     return equation,Symbols
+
+
 
 def file_handling(path): #deals with opening and formating the file and data
     data=pd.read_csv(path,keep_default_na=False)
@@ -79,6 +77,7 @@ def file_handling(path): #deals with opening and formating the file and data
 #     if no error is presented then it wil lassumed to be 0
 
 
+
 def Constant_handling():
     Constant_number=tkinter.simpledialog.askstring("constant", "how many contants does your equation have")
     try:
@@ -110,7 +109,6 @@ def Constant_diolago(x):
 def Selection(org_data,headers,Cont_dir,Symbols):
     button_cont()
     print(const_complete)
-
 
 
 
@@ -196,6 +194,7 @@ def inserting_constants(const_complete):
     return
 
 
+
 def button_Headers():
     global x
     global berry
@@ -235,6 +234,7 @@ def button_Headers():
     return
 
 
+
 def error_prop():
     global new_Equation,org_data,headers_complete,Equation #org data is all data where used_data is required data
     partial_diff=[]
@@ -246,8 +246,6 @@ def error_prop():
         temp_data=[]
         temp_error=[]
         for data in org_data:
-            print(f"this is the header{header}")
-            print(f"this is the data{data}")
             if data[0]==header[0]:
                 for data_index in range(1,len(data)):
                     if data[data_index][0]=="":
@@ -265,10 +263,8 @@ def error_prop():
         variable_name = f"sigma_{data[0][1]}"
         globals()[variable_name] = data[2]
     new_vaules=eval(new_Equation)
-    print(used_data)
     temp_error=np.linspace(0,0,num=len(used_data[0][1]))
     for partial in partial_diff:
-        print(temp_error,(eval(str(partial[0])))**2)
         temp_error=temp_error+(eval(str(partial[0])))**2
     new_error=np.sqrt(temp_error)
     new_file={}
@@ -286,22 +282,13 @@ def error_prop():
     new_file.update({"new vaules error":new_error})
     df = pd.DataFrame(new_file)
     global path
-    print(path)
     path_split=(path.name).split(r"/")
-    print(path_split)
     file_name=((path_split[len(path_split)-1]).split(".")[0])
     path_split.pop(len(path_split)-1)
-    print(path_split)
     new_path=""
     for i in path_split:
         new_path=new_path+(f"{i}/")
-    print(new_path)
     df.to_csv(new_path+file_name+"_Propgated.csv", index=False)
-
-
-
-
-
 
 
 
