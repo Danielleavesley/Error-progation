@@ -13,6 +13,8 @@ def File_slc(): #handles dioglog for browsing a file
 
 def Equation_handle(): # handels taking an equation as text imput and finding the symblos within it
     equation=tkinter.simpledialog.askstring("equation", "What equation would you like to progate")
+    global orignal_equation
+    orignal_equation=equation
     chars=list(equation)
     chars.append("_")
     Symbols=[]
@@ -21,7 +23,12 @@ def Equation_handle(): # handels taking an equation as text imput and finding th
         if 65<=ord(x)<=90 or 97<=ord(x)<=122:
             temp=temp+x
         elif len(temp)>0:
-            Symbols.append(temp)
+            Present=False
+            for y in Symbols:
+                if y==temp:
+                    Present=True
+            if Present==False:
+                Symbols.append(temp)
             temp=""
 
     return equation,Symbols
@@ -93,18 +100,22 @@ def Constant_handling():
             Values.update({x+1 :  Constant_Vaule})
         return(Values)
     
-            
+
+const_error=[]         
 
 def Constant_diolago(x):
-    Constant_Vaule=tkinter.simpledialog.askstring(f"constant {x+1}", f" what is Constant{x+1} vaule")
+    Constant_Vaule=tkinter.simpledialog.askstring(f"constant {x+1}", f" what is Constant{x+1} vaule, to add error use +- between the value and error")
+    constant_split=Constant_Vaule.split("+-")
     try:
-        float(Constant_Vaule)
+        float(constant_split[0])
     except:
         print("not number")
         Constant_diolago(x)
         return
     else:
-        return float(Constant_Vaule)
+        const_error.append(constant_split)#should be [constant vaule,constant error]
+        return float(constant_split[0])
+    
      
 def Selection(org_data,headers,Cont_dir,Symbols):
     button_cont()
@@ -125,6 +136,7 @@ def button_cont():
     try:
         pick=berry.get(ANCHOR)
         const_complete.append(pick) 
+
         Symbols.remove(pick)
     except:
         print("fine")
@@ -159,10 +171,10 @@ def button_cont():
 
     return
 
-
+#const_complete i belive is formated as in the order constant was selectedand just the symblo
 
 def inserting_constants(const_complete):
-    global Equation,Cont_dir,new_Equation                              #Cont_dir: it formates like {1:vaule , 2:vaule}  attaully just list constats saying it was the first or second contant to be asked
+    global Equation,Cont_dir,new_Equation ,Cont_dir_named                             #Cont_dir: it formates like {1:vaule , 2:vaule}  attaully just list constats saying it was the first or second contant to be asked
     Cont_dir_named=Cont_dir
     for n in range(1,len(Cont_dir)+1):
         Cont_dir_named[f"{const_complete[n-1]}"]=Cont_dir_named.get(n)
@@ -240,8 +252,8 @@ def error_prop():
     partial_diff=[]
     used_data=[]   # used_data formated [[[headers,symbol],[data for header1],[error for header1]],[[data for header2],[error for header2]]....]
     for x in headers_complete:
-        partial_diff.append([diff(new_Equation+(f"*sigma_{x[1]}"),x[1]),x[1]]) #partial_diff is formated like so [[partial diffrental,the sybol it was diffrent against] , []]
-    
+        partial_diff.append([(f"({str(diff(new_Equation,x[1]))})*")+(f"sigma_{x[1]}"),x[1]]) #partial_diff is formated like so [[partial diffrental,the sybol it was diffrent against] , []]
+        print([(f"({str(diff(new_Equation,x[1]))})*")+(f"sigma_{x[1]}"),x[1]])
     for header in headers_complete:
         temp_data=[]
         temp_error=[]
@@ -264,8 +276,35 @@ def error_prop():
         globals()[variable_name] = data[2]
     new_vaules=eval(new_Equation)
     temp_error=np.linspace(0,0,num=len(used_data[0][1]))
+
+    ###dealing with error un contants
+    #temp_partial=[]
+    #temp_partial_replacment=[]
+    #for y in range(0,len(const_complete)):
+        #temp_partial=diff(orignal_equation,const_complete[y])
+    #for y in temp_partial:
+        #new_eq=y
+       # for x in Cont_dir_named:
+           # temp=""
+           # temp_eq=""
+           # for z in new_eq.split():
+               # temp=temp+z
+               # if len(temp)==len(x):
+                   # if temp==x:
+                      #  temp_eq=temp_eq+Cont_dir_named[f"{x}"]
+                      #  temp=""
+                   # else:
+                      #  temp_eq=temp_eq+temp[0]
+
+        
+
+
+
     for partial in partial_diff:
+        print(sigma_w,sigma_l)
+        print(temp_error,partial,str(partial[0]))
         temp_error=temp_error+(eval(str(partial[0])))**2
+    print(np.sqrt(temp_error))
     new_error=np.sqrt(temp_error)
     new_file={}
     for data in org_data:
@@ -289,6 +328,7 @@ def error_prop():
     for i in path_split:
         new_path=new_path+(f"{i}/")
     df.to_csv(new_path+file_name+"_Propgated.csv", index=False)
+    print("new file Created")
 
 
 
