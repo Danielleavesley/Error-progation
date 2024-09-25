@@ -106,14 +106,17 @@ const_error=[]
 def Constant_diolago(x):
     Constant_Vaule=tkinter.simpledialog.askstring(f"constant {x+1}", f" what is Constant{x+1} vaule, to add error use +- between the value and error")
     constant_split=Constant_Vaule.split("+-")
+    print(constant_split)
     try:
         float(constant_split[0])
     except:
         print("not number")
-        Constant_diolago(x)
-        return
+        return Constant_diolago(x)
     else:
-        const_error.append(constant_split)#should be [constant vaule,constant error]
+        try:
+            const_error.append(constant_split[1])#should be [constant vaule,constant error]
+        except:
+            const_error.append("0")
         return float(constant_split[0])
     
      
@@ -232,7 +235,7 @@ def button_Headers():
 
 
         #widgets
-        label=ttk.Label(master=windows, text=f"This symbol {f"{Symbols[x]}"} \nwhat symbol repersents it").pack()
+        label=ttk.Label(master=windows, text=f"This symbol {f"{Symbols[x]}"} \nwhat header repersents it").pack()
         box2=tkinter.Listbox(master=windows,selectmode=SINGLE , height=len(no_error_headers),width=50)
         for y in range(0,len(no_error_headers)): 
             box2.insert(tkinter.END, no_error_headers[y])
@@ -278,32 +281,47 @@ def error_prop():
     temp_error=np.linspace(0,0,num=len(used_data[0][1]))
 
     ###dealing with error un contants
-    #temp_partial=[]
-    #temp_partial_replacment=[]
-    #for y in range(0,len(const_complete)):
-        #temp_partial=diff(orignal_equation,const_complete[y])
-    #for y in temp_partial:
-        #new_eq=y
-       # for x in Cont_dir_named:
-           # temp=""
-           # temp_eq=""
-           # for z in new_eq.split():
-               # temp=temp+z
-               # if len(temp)==len(x):
-                   # if temp==x:
-                      #  temp_eq=temp_eq+Cont_dir_named[f"{x}"]
-                      #  temp=""
-                   # else:
-                      #  temp_eq=temp_eq+temp[0]
-
+    temp_partial=[]
+    temp_partial_replacment=[]
+    m=0
+    print(const_complete,const_error)
+    for y in range(0,len(const_complete)):
+        temp_partial.append(diff(orignal_equation,const_complete[y]))
+    print(temp_partial)
+    for y in temp_partial:
+        new_eq=str(y)
+        for x in Cont_dir_named:
+            temp=""
+            temp_eq=""
+            for z in list(new_eq):
+                temp=temp+z
+                temp_eq=temp_eq+z 
+                print(f"hi1: {temp,temp_eq,x,z}")
+                if len(temp)==len(x):
+                    if temp==x:
+                        print(f"hi2: {temp,temp_eq}")
+                        temp_eq=temp_eq[:-len(x)]
+                        temp_eq=temp_eq+str(Cont_dir_named[f"{x}"])
+                        print(f"hi3: {temp,temp_eq}")
+                        temp=""
+                        print(f"hi4: {temp,temp_eq}")
+                    else:
+                        temp=temp[1:]
+                print(f"hi5: {temp,temp_eq}")  
+            new_eq=temp_eq
+        print(f"({new_eq})*{const_error[m]}")
+        temp_partial_replacment.append([f"({new_eq})*{const_error[m]}",const_complete[m]])
+        m=m+1
+    for n in temp_partial_replacment:
+        partial_diff.append(n)
         
 
 
 
     for partial in partial_diff:
-        print(sigma_w,sigma_l)
-        print(temp_error,partial,str(partial[0]))
+        print(partial,str(partial[0]),(eval(str(partial[0]))))
         temp_error=temp_error+(eval(str(partial[0])))**2
+        print(temp_error)
     print(np.sqrt(temp_error))
     new_error=np.sqrt(temp_error)
     new_file={}
